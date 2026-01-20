@@ -86,6 +86,10 @@ func (e *AccessorExpr) evaluateAccessor(accessor string, input interface{}) (r i
 }
 
 func (e *AccessorExpr) getReturnType(accessor string, input interface{}) reflect.Type {
+	if input == nil {
+		return reflect.TypeOf((*interface{})(nil)).Elem()
+	}
+
 	method, field := e.getMethodOrField(accessor, input)
 
 	switch {
@@ -96,7 +100,8 @@ func (e *AccessorExpr) getReturnType(accessor string, input interface{}) reflect
 		return field.Type()
 	}
 
-	return nil
+	// Return a generic interface type instead of nil to prevent reflect.SliceOf panic.
+	return reflect.TypeOf((*interface{})(nil)).Elem()
 }
 
 func (e *AccessorExpr) getMethodOrField(accessor string, input interface{}) (*reflect.Value, *reflect.Value) {
