@@ -30,14 +30,14 @@ func NewIndividualPage(document *gedcom.Document, individual *gedcom.IndividualN
 }
 
 func (c *IndividualPage) WriteHTMLTo(w io.Writer) (int64, error) {
-	// Ensure a name exists before accessing index 0.
+	// Guard against empty name slices to prevent panics on data with missing names.
 	nameString := "Unknown"
 	if len(c.individual.Names()) > 0 {
 		nameString = c.individual.Names()[0].String()
 	}
 
-	// Cast the forced visibility to the specific type required by the functions.
-	visibility := LivingVisibility(LivingVisibilityShow)
+	// Use the visibility setting provided in the options.
+	visibility := c.options.LivingVisibility
 
 	individualName := NewIndividualName(c.individual, visibility, UnknownEmphasis)
 	individualDates := NewIndividualDates(c.individual, visibility)
