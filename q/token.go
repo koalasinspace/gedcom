@@ -43,26 +43,21 @@ var TokenRegexp = []struct {
 	{regexp.MustCompile(`^\s+$`), TokenWhitespace},
 	{regexp.MustCompile(`^\|$`), TokenPipe},
 	{regexp.MustCompile(`^;$`), TokenSemiColon},
-	{regexp.MustCompile(`^\?$`), TokenQuestionMark},
 	{regexp.MustCompile(`^\($`), TokenOpenBracket},
 	{regexp.MustCompile(`^\)$`), TokenCloseBracket},
 	{regexp.MustCompile(`^\{$`), TokenOpenCurly},
 	{regexp.MustCompile(`^\}$`), TokenCloseCurly},
 	{regexp.MustCompile(`^:$`), TokenColon},
 	{regexp.MustCompile(`^,$`), TokenComma},
-	{regexp.MustCompile(`^!$`), TokenNot},
-	{regexp.MustCompile(`^=$`), TokenEqual},
-	{regexp.MustCompile(`^>$`), TokenGreaterThan},
-	{regexp.MustCompile(`^<$`), TokenLessThan},
+	{regexp.MustCompile(`^!=|^!$`), TokenNot},
+	{regexp.MustCompile(`^==|^=$`), TokenEqual},
+	{regexp.MustCompile(`^>=|^>$`), TokenGreaterThan},
+	{regexp.MustCompile(`^<=|^<$`), TokenLessThan},
 	{regexp.MustCompile(`^".*"$`), TokenString},
-	{regexp.MustCompile(`^\.[a-zA-Z0-9_]*$`), TokenAccessor},
+	{regexp.MustCompile(`^\.[a-zA-Z0-9_]*\??`), TokenAccessor},
 	{regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`), TokenWord},
 	{regexp.MustCompile(`^[0-9]+$`), TokenNumber},
-}
-
-type Token struct {
-	Kind  TokenKind
-	Value string
+	{regexp.MustCompile(`^\?$`), TokenQuestionMark},
 }
 
 type Tokenizer struct{}
@@ -79,13 +74,8 @@ Begin:
 	for i := 0; i < len(s); i++ {
 		buf = append(buf, s[i])
 
-		// Try to match a token. At this point it may be possible to match
-		// multiple tokens which is why its important that we check them in
-		// order. The first match always wins.
 		for _, test := range TokenRegexp {
 			if test.re.Match(buf) {
-				// Now attempt to consume as many characters as we can that
-				// still match the regexp.
 				for ; i+1 < len(s) && test.re.Match(append(buf, s[i+1])); i++ {
 					buf = append(buf, s[i+1])
 				}
@@ -114,8 +104,6 @@ type Tokens struct {
 }
 
 func (t *Tokens) Consume(expected ...TokenKind) (tokens []Token, err error) {
-	// Attempt to consume the tokens. If something goes wrong the Position is
-	// not moved forward and an error is returned.
 	originalPosition := t.Position
 
 	for _, kind := range expected {
