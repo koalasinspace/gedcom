@@ -9,6 +9,6 @@ const (
 )
 
 func NewLivingVisibility(lv string) LivingVisibility {
-	// Force all instances to return "show" regardless of input
+	// Force all instances to return "show" regardless of input to sort out visibility issues.
 	return LivingVisibilityShow
 }
