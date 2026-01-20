@@ -9,6 +9,12 @@ const (
 )
 
 func NewLivingVisibility(lv string) LivingVisibility {
-	// Always return show to bypass privacy filters globally.
-	return LivingVisibilityShow
+	switch LivingVisibility(lv) {
+	case LivingVisibilityShow,
+		LivingVisibilityHide,
+		LivingVisibilityPlaceholder:
+		return LivingVisibility(lv)
+	}
+
+	panic("invalid LivingVisibility: " + lv)
 }
