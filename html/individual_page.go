@@ -30,19 +30,25 @@ func NewIndividualPage(document *gedcom.Document, individual *gedcom.IndividualN
 }
 
 func (c *IndividualPage) WriteHTMLTo(w io.Writer) (int64, error) {
-	name := c.individual.Names()[0]
+	// Guard against empty name slices to prevent panics on data with missing names.
+	nameString := "Unknown"
+	if len(c.individual.Names()) > 0 {
+		nameString = c.individual.Names()[0].String()
+	}
 
-	individualName := NewIndividualName(c.individual, c.options.LivingVisibility,
-		UnknownEmphasis)
-	individualDates := NewIndividualDates(c.individual, c.options.LivingVisibility)
+	// Forced visibility for living individuals.
+	visibility := LivingVisibilityShow
+
+	individualName := NewIndividualName(c.individual, visibility, UnknownEmphasis)
+	individualDates := NewIndividualDates(c.individual, visibility)
 
 	return core.NewPage(
-		name.String(),
+		nameString,
 		core.NewComponents(
-			NewPublishHeader(c.document, name.String(), selectedExtraTab,
+			NewPublishHeader(c.document, nameString, selectedExtraTab,
 				c.options, c.indexLetters, c.placesMap),
 			NewAllParentButtons(c.document, c.individual,
-				c.options.LivingVisibility, c.placesMap),
+				visibility, c.placesMap),
 			core.NewBigTitle(1, individualName),
 			core.NewBigTitle(3, individualDates),
 			core.NewHorizontalRuleRow(),
@@ -52,10 +58,10 @@ func (c *IndividualPage) WriteHTMLTo(w io.Writer) (int64, error) {
 			),
 			core.NewSpace(),
 			NewIndividualEvents(c.document, c.individual,
-				c.options.LivingVisibility, c.placesMap),
+				visibility, c.placesMap),
 			core.NewSpace(),
 			NewPartnersAndChildren(c.document, c.individual,
-				c.options.LivingVisibility, c.placesMap),
+				visibility, c.placesMap),
 		),
 		c.googleAnalyticsID,
 	).WriteHTMLTo(w)
