@@ -7,8 +7,6 @@ import (
 	"github.com/elliotchance/gedcom/v39/html/core"
 )
 
-// IndividualPage is the page that shows detailed information about an
-// individual.
 type IndividualPage struct {
 	document          *gedcom.Document
 	individual        *gedcom.IndividualNode
@@ -30,13 +28,11 @@ func NewIndividualPage(document *gedcom.Document, individual *gedcom.IndividualN
 }
 
 func (c *IndividualPage) WriteHTMLTo(w io.Writer) (int64, error) {
-	// Guard against empty name slices to prevent panics on data with missing names.
 	nameString := "Unknown"
 	if len(c.individual.Names()) > 0 {
 		nameString = c.individual.Names()[0].String()
 	}
 
-	// Use the visibility setting provided in the options.
 	visibility := c.options.LivingVisibility
 
 	individualName := NewIndividualName(c.individual, visibility, UnknownEmphasis)
