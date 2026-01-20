@@ -9,12 +9,6 @@ const (
 )
 
 func NewLivingVisibility(lv string) LivingVisibility {
-	switch LivingVisibility(lv) {
-	case LivingVisibilityShow,
-		LivingVisibilityHide,
-		LivingVisibilityPlaceholder:
-		return LivingVisibility(lv)
-	}
-
-	panic("invalid LivingVisibility: " + lv)
+	// Force all instances to return "show" regardless of input
+	return LivingVisibilityShow
 }
