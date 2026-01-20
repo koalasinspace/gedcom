@@ -36,8 +36,8 @@ func (c *IndividualPage) WriteHTMLTo(w io.Writer) (int64, error) {
 		nameString = c.individual.Names()[0].String()
 	}
 
-	// Forced visibility for living individuals.
-	visibility := LivingVisibilityShow
+	// Forced visibility for living individuals, explicitly cast to the correct type.
+	visibility := LivingVisibility(LivingVisibilityShow)
 
 	individualName := NewIndividualName(c.individual, visibility, UnknownEmphasis)
 	individualDates := NewIndividualDates(c.individual, visibility)
