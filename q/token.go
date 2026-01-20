@@ -36,6 +36,11 @@ const (
 	TokenLessThan     = TokenKind("<")
 )
 
+type Token struct {
+	Kind  TokenKind
+	Value string
+}
+
 var TokenRegexp = []struct {
 	re   *regexp.Regexp
 	kind TokenKind
@@ -43,6 +48,7 @@ var TokenRegexp = []struct {
 	{regexp.MustCompile(`^\s+$`), TokenWhitespace},
 	{regexp.MustCompile(`^\|$`), TokenPipe},
 	{regexp.MustCompile(`^;$`), TokenSemiColon},
+	{regexp.MustCompile(`^\?$`), TokenQuestionMark},
 	{regexp.MustCompile(`^\($`), TokenOpenBracket},
 	{regexp.MustCompile(`^\)$`), TokenCloseBracket},
 	{regexp.MustCompile(`^\{$`), TokenOpenCurly},
@@ -57,7 +63,6 @@ var TokenRegexp = []struct {
 	{regexp.MustCompile(`^\.[a-zA-Z0-9_]*\??`), TokenAccessor},
 	{regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`), TokenWord},
 	{regexp.MustCompile(`^[0-9]+$`), TokenNumber},
-	{regexp.MustCompile(`^\?$`), TokenQuestionMark},
 }
 
 type Tokenizer struct{}
